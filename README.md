@@ -15,13 +15,13 @@
 
 <p align="center">
   <img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-blue">
-  <img alt="Release" src="https://img.shields.io/badge/release-minimal-lightgrey">
-  <img alt="Prompts" src="https://img.shields.io/badge/prompts-external-orange">
+  <img alt="Code" src="https://img.shields.io/badge/code-official-brightgreen">
+  <img alt="KAR" src="https://img.shields.io/badge/method-KAR-orange">
 </p>
 
 MemeBench asks a deceptively simple question: can a multimodal model explain why a meme is funny, pointed, ironic, or culturally loaded?
 
-This repo is the **minimal public code release**. It includes the KAR inference core, a small search wrapper, and evaluation utilities. It does not include the dataset, prompts, data construction pipeline, annotation tools, scripts, tests, or studio UI.
+This repo hosts the official implementation of the KAR inference path and the evaluation utilities used with MemeBench. Dataset files and prompt templates are managed as separate artifacts so the code can stay lightweight and easy to inspect.
 
 ## What Is Inside
 
@@ -68,7 +68,7 @@ KAR stands for **Knowledge Anatomy-informed Retrieval**. It is a four-stage pipe
 3. Fuse VLM-generated queries with high-confidence KB hits, then search the web.
 4. Ask the model for a grounded meme explanation.
 
-Prompts are deliberately external. Bring your own prompt files and pass them in:
+Load your prompt templates from local files and pass them in:
 
 ```python
 import asyncio
@@ -173,17 +173,14 @@ Prediction files are just as simple:
 }
 ```
 
-## Release Scope
+## Artifact Layout
 
-This repository is intentionally small. The following are kept out of the public code release:
+MemeBench keeps code, data, and experiment artifacts versioned separately:
 
-- dataset files and images
-- prompt text
-- crawlers and annotation pipelines
-- data generation scripts
-- internal experiments, logs, tests, and UI tooling
-
-That separation keeps the code release tidy and makes the benchmark artifacts easier to version independently.
+- this repository: KAR inference and evaluation code
+- dataset release: images and annotations
+- prompt/config artifacts: judge and inference templates
+- experiment artifacts: predictions, judge outputs, and traces
 
 ## Citation
 
