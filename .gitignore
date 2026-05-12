@@ -1,0 +1,70 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+!main.bbl
+!output.bbl
+*.blg
+*.pdf
+!figures/*.pdf
+
+# Figures not used in paper
+figures/drafts/
+figures/prompts/
+figures/scripts/
+figures/sources/
+figures/kar-pipeline.jpg
+figures/search-cot-pipeline.jpg
+figures/fig_kar_pipeline.png
+
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# macOS
+.DS_Store
+paper/
+
+# Local agent/runtime state
+.claude/
+CLAUDE.local.md
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Data directory (root only)
+/data/
+/crawler/data/
+/crawler/reddit/data/
+
+# Logs, docs, and analysis artifacts
+logs/
+analysis/
+docs/
+archive/
+output/
+outputs/
+
+# Status marker files
+.qwen36_*
+
+# Node.js
+node_modules/
+.next/
+.turbo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# HuggingFace staging
+hf_staging/
