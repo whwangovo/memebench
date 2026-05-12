@@ -1,98 +1,75 @@
 [English](./README.md) | [中文](./README_CN.md)
 
+<h1 align="center">MemeBench: Evaluating Open-Ended Meme Understanding in Multimodal Models</h1>
+
 <p align="center">
-  <h1 align="center">🧩 MemeBench</h1>
-  <p align="center">
-    A benchmark toolkit for open-ended meme understanding.
-  </p>
-  <p align="center">
-    <em>Seeing the image is not enough. The model has to get the joke.</em>
-  </p>
-  <p align="center">
-    <a href="https://star-history.com/#whwangovo/memebench&Date">
-      <img src="https://img.shields.io/github/stars/whwangovo/memebench?style=social" alt="GitHub stars" />
-    </a>
-  </p>
+  <a href="">Paper</a> •
+  <a href="">Dataset</a> •
+  <a href="">Leaderboard</a> •
+  <a href="https://github.com/whwangovo/memebench">Code</a>
 </p>
 
----
+<p align="center">
+  <img src="https://img.shields.io/badge/Task-Meme%20Understanding-blue" alt="task">
+  <img src="https://img.shields.io/badge/Evaluation-Open--Ended-green" alt="evaluation">
+  <img src="https://img.shields.io/badge/Method-KAR-orange" alt="method">
+</p>
 
-## 🧠 What is MemeBench?
+## 📢 News
 
-MemeBench evaluates whether multimodal models can explain memes in open-ended language: what is visible, who or what is referenced, what cultural knowledge is needed, and why the meme works.
+- **[2026/05]** We release the official code for KAR inference and MemeBench evaluation.
+- Paper, dataset, and leaderboard links will be updated with the public benchmark release.
 
-The benchmark follows the **VIKR** decomposition:
+## 🌟 Highlights
 
-| Layer | Question |
+- **Open-ended meme interpretation.** Models generate free-form explanations rather than selecting from predefined options.
+- **Fine-grained diagnostic protocol.** MemeBench evaluates four layers of meme understanding: Visual, Identity, Knowledge, and Reasoning.
+- **Knowledge-intensive evaluation.** The benchmark emphasizes cultural references, named entities, internet context, and humor mechanisms.
+- **KAR inference.** We provide the implementation of Knowledge Anatomy-informed Retrieval for retrieving and using cultural background information.
+- **Artifact separation.** Code, dataset, prompts, and experiment outputs are versioned separately for clearer reproducibility.
+
+## 📖 Introduction
+
+Memes are compact multimodal artifacts. A model may correctly read the text and describe the image, yet still miss the joke because it fails to identify the referenced entity, retrieve the necessary cultural background, or connect the reference to the intended communicative effect.
+
+MemeBench is designed to evaluate this kind of layered understanding. Each example is assessed under the **VIKR** schema:
+
+| Dimension | Description |
 |---|---|
-| **V — Visual** | What is visible in the image? What text appears? |
-| **I — Identity** | Which named entities, characters, works, or cultural references appear? |
-| **K — Knowledge** | What background knowledge is needed to understand the meme? |
-| **R — Reasoning** | How do the visual cue and cultural context produce the joke or message? |
+| **V — Visual** | Visual content, OCR, scene layout, and image-level evidence. |
+| **I — Identity** | Named entities, characters, source works, public figures, and cultural references. |
+| **K — Knowledge** | Background facts, internet culture, meme conventions, and domain knowledge. |
+| **R — Reasoning** | The connection between visual evidence, cultural context, humor, irony, or communicative intent. |
 
-This repository contains the official KAR inference path and evaluation utilities. Dataset files, prompt templates, and experiment outputs are versioned as separate artifacts.
+This repository contains the official evaluation utilities and the KAR inference implementation used with MemeBench.
 
----
+## 🧩 Repository Structure
 
-## ✨ Highlights
-
-- **Open-ended evaluation** — models write explanations, not multiple-choice labels.
-- **Layer-wise diagnosis** — VIKR makes failures easier to locate.
-- **KAR inference** — Knowledge Anatomy-informed Retrieval for culture-heavy memes.
-- **Prompt-agnostic evaluation** — bring your own judge prompt template.
-- **Clean artifact split** — code, data, prompts, and experiment outputs stay decoupled.
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Python 3.10+
-- An OpenAI-compatible model endpoint
-- Tavily API key if you run KAR with web search
-
-### Installation
-
-```bash
-git clone https://github.com/whwangovo/memebench.git
-cd memebench
-
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-
-cp .env.example .env
+```text
+memebench/
+├── memebench/
+│   ├── culture_base/      # CultureBase retriever interface
+│   ├── search/            # Tavily text search wrapper
+│   ├── llm_client.py      # OpenAI-compatible async client helper
+│   └── utils/retry.py     # retry utilities
+└── pipelines/
+    ├── inference/kar.py   # KAR inference implementation
+    └── evaluation/        # judging, scoring, and dual-judge aggregation
 ```
-
-Fill in:
-
-```bash
-OPENAI_API_KEY=...
-TAVILY_API_KEY=...
-```
-
-If you use a custom OpenAI-compatible endpoint:
-
-```bash
-OPENAI_BASE_URL=https://your-endpoint/v1
-```
-
----
 
 ## 🔎 KAR Inference
 
-KAR stands for **Knowledge Anatomy-informed Retrieval**.
+KAR, short for **Knowledge Anatomy-informed Retrieval**, decomposes meme interpretation into retrieval-aware stages:
 
-```
-image
-  └─ VLM extraction: OCR, visual handle, entity guesses, search queries
-       └─ CultureBase retrieval: candidate cultural entities
-            └─ web search: background evidence
-                 └─ grounded VLM reasoning: final meme explanation
+```text
+Image
+  → VLM extraction: OCR, visual handle, entity hypotheses, search queries
+  → CultureBase retrieval: candidate cultural entities
+  → Web search: cultural background evidence
+  → Grounded VLM reasoning: final meme explanation
 ```
 
-Prompts are loaded from your local files:
+Example usage:
 
 ```python
 import asyncio
@@ -114,26 +91,22 @@ async def main():
         config=config,
         retriever=retriever,
     )
-
     print(result["response"])
-    print(result["kar_trace"])
 
 
 asyncio.run(main())
 ```
 
-The reasoning prompt template should accept:
+Prompt templates are provided as external artifacts. The reasoning template should contain:
 
 ```text
 {knowledge_source}
 {knowledge}
 ```
 
----
-
 ## 📏 Evaluation
 
-MemeBench evaluation is checklist-based. A judge model reads the candidate response and the reference annotation, then outputs VIKR scores.
+MemeBench uses checklist-based evaluation. Given a candidate response and a reference annotation, the judge produces VIKR scores and an overall correctness decision.
 
 Run a judge:
 
@@ -153,7 +126,7 @@ The judge prompt must contain:
 {generated_answer_to_eval}
 ```
 
-Aggregate two judges:
+Aggregate two judge files:
 
 ```bash
 python -m pipelines.evaluation.aggregate_dual_judge \
@@ -162,17 +135,15 @@ python -m pipelines.evaluation.aggregate_dual_judge \
   --output output/model_dual_judge.json
 ```
 
-Print scores:
+Report scores:
 
 ```bash
 python -m pipelines.evaluation.score output/model_dual_judge.json
 ```
 
----
-
 ## 📦 Data Format
 
-Benchmark item:
+The dataset is released separately. A benchmark item is expected to contain:
 
 ```json
 {
@@ -191,7 +162,7 @@ Benchmark item:
 }
 ```
 
-Prediction item:
+Prediction files should contain:
 
 ```json
 {
@@ -201,48 +172,24 @@ Prediction item:
 }
 ```
 
----
+## 📌 TODO
 
-## 📁 Repository Structure
-
-```text
-memebench/
-├── memebench/
-│   ├── culture_base/      # local CultureBase retriever
-│   ├── search/            # Tavily text search wrapper
-│   ├── llm_client.py      # OpenAI-compatible async client helper
-│   └── utils/retry.py     # retry helpers
-└── pipelines/
-    ├── inference/kar.py   # KAR implementation
-    └── evaluation/        # judging, scoring, aggregation
-```
-
----
-
-## 🧾 Artifact Layout
-
-| Artifact | Where it lives |
-|---|---|
-| Code | This repository |
-| Dataset | Separate dataset release |
-| Prompt templates | Separate prompt/config artifact |
-| Predictions and judge outputs | Experiment artifact storage |
-
----
+- Release paper link.
+- Release dataset card and download link.
+- Release leaderboard submission instructions.
+- Add official benchmark statistics and result table.
 
 ## 📚 Citation
 
 ```bibtex
 @misc{memebench2026,
-  title = {MemeBench},
+  title = {MemeBench: Evaluating Open-Ended Meme Understanding in Multimodal Models},
   author = {MemeBench Authors},
   year = {2026},
   note = {Citation information coming soon}
 }
 ```
 
----
+## 📮 Contact
 
-## ⭐ Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=whwangovo/memebench&type=Date)](https://star-history.com/#whwangovo/memebench&Date)
+For questions about MemeBench, please open an issue in this repository.

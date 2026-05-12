@@ -1,98 +1,75 @@
 [English](./README.md) | [中文](./README_CN.md)
 
+<h1 align="center">MemeBench：面向开放式梗图理解的多模态模型评测</h1>
+
 <p align="center">
-  <h1 align="center">🧩 MemeBench</h1>
-  <p align="center">
-    面向开放式梗图理解的 benchmark 工具箱。
-  </p>
-  <p align="center">
-    <em>看见图片还不够，模型得真的懂这个梗。</em>
-  </p>
-  <p align="center">
-    <a href="https://star-history.com/#whwangovo/memebench&Date">
-      <img src="https://img.shields.io/github/stars/whwangovo/memebench?style=social" alt="GitHub stars" />
-    </a>
-  </p>
+  <a href="">论文</a> •
+  <a href="">数据集</a> •
+  <a href="">排行榜</a> •
+  <a href="https://github.com/whwangovo/memebench">代码</a>
 </p>
 
----
+<p align="center">
+  <img src="https://img.shields.io/badge/Task-Meme%20Understanding-blue" alt="task">
+  <img src="https://img.shields.io/badge/Evaluation-Open--Ended-green" alt="evaluation">
+  <img src="https://img.shields.io/badge/Method-KAR-orange" alt="method">
+</p>
 
-## 🧠 这是什么？
+## 📢 最新动态
 
-MemeBench 用来评测多模态模型是否能用开放式文本解释一张梗图：图里有什么、指向了谁、需要什么文化背景，以及这个梗到底为什么成立。
+- **[2026/05]** 发布 KAR 推理与 MemeBench 评测代码。
+- 论文、数据集和排行榜链接将在 benchmark 正式发布时更新。
 
-我们把梗图理解拆成 **VIKR** 四层：
+## 🌟 亮点
 
-| 层级 | 要回答的问题 |
+- **开放式梗图解释。** 模型需要生成自由文本解释，而不是从候选项中选择答案。
+- **细粒度诊断协议。** MemeBench 从 Visual、Identity、Knowledge、Reasoning 四个层次评测模型能力。
+- **知识密集型评测。** 重点考察文化引用、命名实体、互联网语境和幽默机制。
+- **KAR 推理。** 提供 Knowledge Anatomy-informed Retrieval 的官方实现，用于检索并利用文化背景信息。
+- **Artifact 分离。** 代码、数据、prompt 和实验输出分别管理，便于复现和版本控制。
+
+## 📖 简介
+
+梗图是一种高度压缩的多模态文化表达。模型可能能读出图片文字，也能描述画面，但如果无法识别被引用的实体、补全必要的文化背景，或把引用和表达意图联系起来，它仍然没有真正理解这个梗。
+
+MemeBench 旨在评测这种分层理解能力。每个样本按照 **VIKR** schema 进行评估：
+
+| 维度 | 描述 |
 |---|---|
-| **V — Visual** | 图里看到了什么？有哪些文字？ |
-| **I — Identity** | 出现了哪些具体人物、角色、作品或文化引用？ |
-| **K — Knowledge** | 理解这个梗需要哪些背景知识？ |
-| **R — Reasoning** | 视觉线索和文化语境如何组合成笑点或表达意图？ |
+| **V — Visual** | 图像内容、OCR、场景布局和视觉证据。 |
+| **I — Identity** | 命名实体、角色、来源作品、公众人物和文化引用。 |
+| **K — Knowledge** | 背景事实、互联网文化、梗图惯例和领域知识。 |
+| **R — Reasoning** | 视觉证据、文化语境、幽默、反讽或表达意图之间的连接。 |
 
-这个仓库提供 MemeBench 的 KAR 推理路径和评测工具。数据、prompt 模板和实验输出作为独立 artifact 管理。
+本仓库包含 MemeBench 的官方评测工具和 KAR 推理实现。
 
----
+## 🧩 仓库结构
 
-## ✨ 亮点
-
-- **开放式评测** — 模型写解释，不做选择题。
-- **分层诊断** — VIKR 能看出模型到底卡在视觉、身份、知识还是推理。
-- **KAR 推理** — Knowledge Anatomy-informed Retrieval，面向文化背景很重的梗图。
-- **评测 prompt 解耦** — judge prompt 从外部文件加载，方便替换和复现实验。
-- **artifact 分离** — 代码、数据、prompt、预测结果分开版本管理。
-
----
-
-## 🚀 快速开始
-
-### 环境要求
-
-- Python 3.10+
-- 一个 OpenAI 兼容的模型接口
-- 如果运行 KAR web search，需要 Tavily API key
-
-### 安装
-
-```bash
-git clone https://github.com/whwangovo/memebench.git
-cd memebench
-
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-
-cp .env.example .env
+```text
+memebench/
+├── memebench/
+│   ├── culture_base/      # CultureBase 检索器接口
+│   ├── search/            # Tavily 文本搜索封装
+│   ├── llm_client.py      # OpenAI 兼容异步客户端 helper
+│   └── utils/retry.py     # 重试工具
+└── pipelines/
+    ├── inference/kar.py   # KAR 推理实现
+    └── evaluation/        # judge、score 与双 judge 聚合
 ```
-
-填写：
-
-```bash
-OPENAI_API_KEY=...
-TAVILY_API_KEY=...
-```
-
-如果使用自定义 OpenAI 兼容接口：
-
-```bash
-OPENAI_BASE_URL=https://your-endpoint/v1
-```
-
----
 
 ## 🔎 KAR 推理
 
-KAR 全称 **Knowledge Anatomy-informed Retrieval**。
+KAR 全称 **Knowledge Anatomy-informed Retrieval**，将梗图解释拆解为带检索的多阶段流程：
 
 ```text
-image
-  └─ VLM extraction：OCR、视觉线索、实体猜测、搜索 query
-       └─ CultureBase retrieval：候选文化实体
-            └─ web search：背景证据
-                 └─ grounded VLM reasoning：最终梗图解释
+Image
+  → VLM extraction：OCR、视觉线索、实体假设、搜索 query
+  → CultureBase retrieval：候选文化实体
+  → Web search：文化背景证据
+  → Grounded VLM reasoning：最终梗图解释
 ```
 
-prompt 从你的本地文件加载：
+使用示例：
 
 ```python
 import asyncio
@@ -114,26 +91,22 @@ async def main():
         config=config,
         retriever=retriever,
     )
-
     print(result["response"])
-    print(result["kar_trace"])
 
 
 asyncio.run(main())
 ```
 
-reasoning prompt 模板需要包含：
+Prompt 模板作为外部 artifact 管理。Reasoning prompt 需要包含：
 
 ```text
 {knowledge_source}
 {knowledge}
 ```
 
----
-
 ## 📏 评测
 
-MemeBench 使用 checklist-based evaluation。Judge 模型读取候选回答和参考标注，输出 VIKR 各维度得分。
+MemeBench 使用 checklist-based evaluation。给定候选回答和参考标注，judge 会输出 VIKR 维度分数和整体正确性判断。
 
 运行 judge：
 
@@ -146,14 +119,14 @@ python -m pipelines.evaluation.judge \
   --v3
 ```
 
-judge prompt 需要包含：
+Judge prompt 需要包含：
 
 ```text
 {reference_answer}
 {generated_answer_to_eval}
 ```
 
-聚合两个 judge：
+聚合两个 judge 文件：
 
 ```bash
 python -m pipelines.evaluation.aggregate_dual_judge \
@@ -162,17 +135,15 @@ python -m pipelines.evaluation.aggregate_dual_judge \
   --output output/model_dual_judge.json
 ```
 
-打印分数：
+输出分数：
 
 ```bash
 python -m pipelines.evaluation.score output/model_dual_judge.json
 ```
 
----
-
 ## 📦 数据格式
 
-Benchmark item：
+数据集单独发布。Benchmark item 需要包含：
 
 ```json
 {
@@ -191,7 +162,7 @@ Benchmark item：
 }
 ```
 
-Prediction item：
+Prediction 文件需要包含：
 
 ```json
 {
@@ -201,48 +172,24 @@ Prediction item：
 }
 ```
 
----
+## 📌 TODO
 
-## 📁 仓库结构
-
-```text
-memebench/
-├── memebench/
-│   ├── culture_base/      # 本地 CultureBase 检索器
-│   ├── search/            # Tavily 文本搜索封装
-│   ├── llm_client.py      # OpenAI 兼容异步客户端 helper
-│   └── utils/retry.py     # 重试工具
-└── pipelines/
-    ├── inference/kar.py   # KAR 实现
-    └── evaluation/        # judge、score、aggregation
-```
-
----
-
-## 🧾 Artifact 管理
-
-| Artifact | 管理位置 |
-|---|---|
-| 代码 | 当前仓库 |
-| 数据集 | 单独的数据集发布 |
-| Prompt 模板 | 单独的 prompt/config artifact |
-| 预测与 judge 输出 | 实验 artifact 存储 |
-
----
+- 更新论文链接。
+- 更新数据集卡片和下载链接。
+- 更新排行榜提交说明。
+- 补充官方 benchmark 统计与实验结果表。
 
 ## 📚 引用
 
 ```bibtex
 @misc{memebench2026,
-  title = {MemeBench},
+  title = {MemeBench: Evaluating Open-Ended Meme Understanding in Multimodal Models},
   author = {MemeBench Authors},
   year = {2026},
   note = {Citation information coming soon}
 }
 ```
 
----
+## 📮 联系
 
-## ⭐ Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=whwangovo/memebench&type=Date)](https://star-history.com/#whwangovo/memebench&Date)
+如有问题，欢迎在本仓库提交 issue。
