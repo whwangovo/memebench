@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="">论文</a> •
-  <a href="">数据集</a> •
+  <a href="https://huggingface.co/datasets/anonymous-neurips-2026/memebench">数据集</a> •
   <a href="">排行榜</a> •
   <a href="https://github.com/whwangovo/memebench">代码</a>
 </p>
@@ -17,8 +17,9 @@
 
 ## 📢 最新动态
 
+- **[2026/05]** MemeBench 数据集已发布到 [Hugging Face](https://huggingface.co/datasets/anonymous-neurips-2026/memebench)。
 - **[2026/05]** 发布 KAR 推理与 MemeBench 评测代码。
-- 论文、数据集和排行榜链接将在 benchmark 正式发布时更新。
+- 论文和排行榜链接将在 benchmark 正式发布时更新。
 
 ## 🌟 亮点
 
@@ -143,7 +144,9 @@ python -m pipelines.evaluation.score output/model_dual_judge.json
 
 ## 📦 数据格式
 
-数据集单独发布。Benchmark item 需要包含：
+数据集托管在 Hugging Face：[anonymous-neurips-2026/memebench](https://huggingface.co/datasets/anonymous-neurips-2026/memebench)。
+
+Hub dataset viewer 使用自动转换的 Parquet 视图；正式发布文件同时包含 JSON 标注和图片文件。Benchmark item 需要包含：
 
 ```json
 {
@@ -175,7 +178,6 @@ Prediction 文件需要包含：
 ## 📌 TODO
 
 - 更新论文链接。
-- 更新数据集卡片和下载链接。
 - 更新排行榜提交说明。
 - 补充官方 benchmark 统计与实验结果表。
 

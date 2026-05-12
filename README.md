@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="">Paper</a> •
-  <a href="">Dataset</a> •
+  <a href="https://huggingface.co/datasets/anonymous-neurips-2026/memebench">Dataset</a> •
   <a href="">Leaderboard</a> •
   <a href="https://github.com/whwangovo/memebench">Code</a>
 </p>
@@ -17,8 +17,9 @@
 
 ## 📢 News
 
+- **[2026/05]** MemeBench dataset is available on [Hugging Face](https://huggingface.co/datasets/anonymous-neurips-2026/memebench).
 - **[2026/05]** We release the official code for KAR inference and MemeBench evaluation.
-- Paper, dataset, and leaderboard links will be updated with the public benchmark release.
+- Paper and leaderboard links will be updated with the public benchmark release.
 
 ## 🌟 Highlights
 
@@ -143,7 +144,9 @@ python -m pipelines.evaluation.score output/model_dual_judge.json
 
 ## 📦 Data Format
 
-The dataset is released separately. A benchmark item is expected to contain:
+The dataset is hosted on Hugging Face: [anonymous-neurips-2026/memebench](https://huggingface.co/datasets/anonymous-neurips-2026/memebench).
+
+The Hub dataset viewer uses an automatically converted Parquet view, while the canonical release also includes the JSON annotations and image files. A benchmark item is expected to contain:
 
 ```json
 {
@@ -175,7 +178,6 @@ Prediction files should contain:
 ## 📌 TODO
 
 - Release paper link.
-- Release dataset card and download link.
 - Release leaderboard submission instructions.
 - Add official benchmark statistics and result table.
 
